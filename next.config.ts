@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  transpilePackages: ['@shopify/polaris', '@shopify/polaris-icons'],
 };
 
 export default nextConfig;

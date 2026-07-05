@@ -24,3 +24,28 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.Polaris-Frame__Content {
+  padding: 0 !important;
+}
+
+.admin-content {
+  padding: 0;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.admin-content .Polaris-Page {
+  max-width: none !important;
+  padding: 0 !important;
+}
+
+.admin-content .Polaris-Page__Content {
+  padding: 24px !important;
+}
+
+@media (min-width: 768px) {
+  .admin-content .Polaris-Page__Content {
+    padding: 32px !important;
+  }
+}
