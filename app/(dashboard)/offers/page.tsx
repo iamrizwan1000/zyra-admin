@@ -2,11 +2,11 @@
 
 import dynamic from 'next/dynamic'
 
-const Placeholder = dynamic(
-  () => import('@/components/admin/PagePlaceholder').then((m) => ({ default: m.PagePlaceholder })),
+const Content = dynamic(
+  () => import('./Content').then((m) => ({ default: m.Content })),
   { ssr: false }
-) as React.ComponentType<{ title: string }>
+) as React.ComponentType
 
 export default function Page() {
-  return <Placeholder title="Offers" />
+  return <Content />
 }

@@ -434,6 +434,46 @@ export async function getAllShops() {
   return data
 }
 
+// ─── Campaigns / Offers ───
+
+export interface Campaign {
+  id: string
+  name: string
+  offer_type: string
+  value: number
+  availability_starts_at: string | null
+  availability_ends_at: string | null
+  benefit_duration_days: number
+  target_package_id: string | null
+  status: string
+}
+
+export async function getCampaigns() {
+  const { data, error } = await supabase
+    .from('campaigns')
+    .select('*, packages!target_package_id(name)')
+    .order('name', { ascending: true })
+  if (error) throw error
+  return data as (Campaign & { packages: { name: string } | null })[]
+}
+
+export async function createCampaign(campaign: Omit<Campaign, 'id'>) {
+  const { data, error } = await supabase.from('campaigns').insert(campaign).select().single()
+  if (error) throw error
+  return data as Campaign
+}
+
+export async function updateCampaign(id: string, campaign: Partial<Campaign>) {
+  const { data, error } = await supabase.from('campaigns').update(campaign).eq('id', id).select().single()
+  if (error) throw error
+  return data as Campaign
+}
+
+export async function deleteCampaign(id: string) {
+  const { error } = await supabase.from('campaigns').delete().eq('id', id)
+  if (error) throw error
+}
+
 // ─── Subscriptions ───
 
 export async function getSubscriptions() {
