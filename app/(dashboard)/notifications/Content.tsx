@@ -5,7 +5,7 @@ import {
   Page, Card, Text, Modal, FormLayout, TextField, Select,
   SkeletonBodyText, Banner, BlockStack, InlineStack, EmptyState,
 } from '@shopify/polaris'
-import { getNotificationCampaigns, createNotificationCampaign } from '@/lib/supabase/admin-queries'
+import { getNotificationCampaigns, createNotificationCampaign } from '@/lib/api/admin'
 import { StatusBadge } from '@/components/admin/StatusBadge'
 
 interface CampaignRecord {
@@ -13,15 +13,13 @@ interface CampaignRecord {
   campaign_name: string
   title: string
   message: string
-  type: string
   display_type: string
   target_type: string
   status: string
-  priority: string
+  priority: number
   starts_at: string | null
   ends_at: string | null
   scheduled_at: string | null
-  sent_at: string | null
   created_at: string
 }
 
@@ -29,7 +27,6 @@ interface NotificationFormData {
   campaign_name: string
   title: string
   message: string
-  type: string
   display_type: string
   target_type: string
   status: string
@@ -42,11 +39,10 @@ const EMPTY_FORM: NotificationFormData = {
   campaign_name: '',
   title: '',
   message: '',
-  type: 'in_app',
   display_type: 'notification',
-  target_type: 'all',
+  target_type: 'all_logged_in',
   status: 'draft',
-  priority: 'normal',
+  priority: '0',
   starts_at: '',
   ends_at: '',
 }
@@ -94,11 +90,10 @@ export function Content() {
         campaign_name: form.campaign_name,
         title: form.title,
         message: form.message,
-        type: form.type,
         display_type: form.display_type,
         target_type: form.target_type,
         status: form.status,
-        priority: form.priority,
+        priority: Number(form.priority),
       }
       if (form.starts_at) data.starts_at = form.starts_at
       if (form.ends_at) data.ends_at = form.ends_at
@@ -163,11 +158,10 @@ export function Content() {
               </InlineStack>
               <div className="space-y-1 text-sm text-gray-600">
                 <p><strong>Title:</strong> {c.title}</p>
-                <p><strong>Type:</strong> {c.type} / {c.display_type}</p>
+                <p><strong>Display Type:</strong> {c.display_type}</p>
                 <p><strong>Target:</strong> {c.target_type}</p>
-                {c.priority && <p><strong>Priority:</strong> {c.priority}</p>}
-                {c.scheduled_at && <p><strong>Scheduled:</strong> {new Date(c.scheduled_at).toLocaleString()}</p>}
-                {c.sent_at && <p><strong>Sent:</strong> {new Date(c.sent_at).toLocaleString()}</p>}
+                  <p><strong>Priority:</strong> {String(c.priority)}</p>
+                  {c.scheduled_at && <p><strong>Scheduled:</strong> {new Date(c.scheduled_at).toLocaleString()}</p>}
                 {c.starts_at && <p><strong>Starts:</strong> {new Date(c.starts_at).toLocaleString()}</p>}
                 {c.ends_at && <p><strong>Ends:</strong> {new Date(c.ends_at).toLocaleString()}</p>}
               </div>
@@ -193,11 +187,10 @@ export function Content() {
             <TextField label="Campaign Name" value={form.campaign_name} onChange={set('campaign_name')} autoComplete="off" autoFocus />
             <TextField label="Title" value={form.title} onChange={set('title')} autoComplete="off" />
             <TextField label="Message" value={form.message} onChange={set('message')} multiline={4} autoComplete="off" />
-            <Select label="Type" value={form.type} onChange={set('type')} options={[{ label: 'In App', value: 'in_app' }, { label: 'Push', value: 'push' }, { label: 'Both', value: 'both' }]} />
-            <Select label="Display Type" value={form.display_type} onChange={set('display_type')} options={[{ label: 'Notification', value: 'notification' }, { label: 'Announcement', value: 'announcement' }, { label: 'Both', value: 'both' }]} />
-            <Select label="Target Type" value={form.target_type} onChange={set('target_type')} options={[{ label: 'All', value: 'all' }, { label: 'City', value: 'city' }, { label: 'Area', value: 'area' }, { label: 'Market', value: 'market' }]} />
+            <Select label="Display Type" value={form.display_type} onChange={set('display_type')} options={[{ label: 'Notification', value: 'notification' }, { label: 'Banner', value: 'banner' }, { label: 'Both', value: 'both' }]} />
+            <Select label="Target Type" value={form.target_type} onChange={set('target_type')} options={[{ label: 'All Logged In', value: 'all_logged_in' }, { label: 'User', value: 'user' }, { label: 'City', value: 'city' }, { label: 'User Type', value: 'user_type' }, { label: 'Package Status', value: 'package_status' }]} />
             <Select label="Status" value={form.status} onChange={set('status')} options={[{ label: 'Draft', value: 'draft' }, { label: 'Scheduled', value: 'scheduled' }, { label: 'Sent', value: 'sent' }]} />
-            <Select label="Priority" value={form.priority} onChange={set('priority')} options={[{ label: 'Low', value: 'low' }, { label: 'Normal', value: 'normal' }, { label: 'High', value: 'high' }]} />
+            <Select label="Priority" value={form.priority} onChange={set('priority')} options={[{ label: '0', value: '0' }, { label: '1', value: '1' }, { label: '2', value: '2' }, { label: '3', value: '3' }, { label: '4', value: '4' }, { label: '5', value: '5' }]} />
             <TextField label="Starts At" value={form.starts_at} onChange={set('starts_at')} placeholder="ISO date" autoComplete="off" />
             <TextField label="Ends At" value={form.ends_at} onChange={set('ends_at')} placeholder="ISO date" autoComplete="off" />
           </FormLayout>

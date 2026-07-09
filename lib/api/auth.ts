@@ -10,6 +10,11 @@ export interface AuthUser {
 }
 
 export async function login(email: string, password: string): Promise<AuthUser> {
+  // Fetch CSRF cookie through proxy (same-origin, browser stores the cookie)
+  if (typeof window !== 'undefined') {
+    await fetch('/api/proxy/sanctum/csrf-cookie', { method: 'GET' })
+  }
+
   const { user, token } = await api<{ user: AuthUser; token: string }>('/auth/login', {
     method: 'POST',
     body: { email, password },

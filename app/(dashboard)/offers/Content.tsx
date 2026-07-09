@@ -7,12 +7,11 @@ import {
 } from '@shopify/polaris'
 import {
   getCampaigns, createCampaign, updateCampaign, deleteCampaign, getPackages,
-} from '@/lib/supabase/admin-queries'
+} from '@/lib/api/admin'
 import { StatusBadge } from '@/components/admin/StatusBadge'
-import type { Campaign, Package } from '@/lib/supabase/admin-queries'
+import type { Campaign, Package } from '@/lib/api/admin'
 
 interface CampaignRow extends Campaign {
-  packages: { name: string } | null
 }
 
 interface CampaignFormData {
@@ -168,8 +167,8 @@ export function Content() {
               <div className="flex items-start justify-between mb-3">
                 <div className="min-w-0">
                   <Text variant="headingLg" as="h2" truncate>{c.name}</Text>
-                  {c.packages && (
-                    <Text variant="bodySm" as="p" tone="subdued">Target: {c.packages.name}</Text>
+                  {c.target_package_id && (
+                    <Text variant="bodySm" as="p" tone="subdued">Target package: {c.target_package_id}</Text>
                   )}
                 </div>
                 <StatusBadge status={c.status} />
@@ -227,20 +226,22 @@ export function Content() {
           <FormLayout>
             <TextField label="Campaign Name" value={form.name} onChange={set('name')} autoComplete="off" autoFocus />
             <Select label="Offer Type" value={form.offer_type} onChange={set('offer_type')} options={[
-              { label: 'Discount', value: 'discount' },
-              { label: 'Bonus', value: 'bonus' },
+              { label: 'Discount Percentage', value: 'discount_percentage' },
+              { label: 'Discount Fixed', value: 'discount_fixed' },
+              { label: 'Free Days', value: 'free_days' },
             ]} />
             <TextField label="Value" value={form.value} onChange={set('value')} type="number" autoComplete="off" helpText="Discount percentage or bonus amount" />
             <TextField label="Availability Start" value={form.availability_starts_at} onChange={set('availability_starts_at')} placeholder="ISO date" autoComplete="off" />
             <TextField label="Availability End" value={form.availability_ends_at} onChange={set('availability_ends_at')} placeholder="ISO date" autoComplete="off" />
             <TextField label="Benefit Duration (days)" value={form.benefit_duration_days} onChange={set('benefit_duration_days')} type="number" autoComplete="off" />
             <Select label="Target Package" value={form.target_package_id} onChange={set('target_package_id')} options={[
-              { label: 'All Packages', value: '' },
+              { label: 'None', value: '' },
               ...packages.map(p => ({ label: p.name, value: p.id })),
             ]} />
             <Select label="Status" value={form.status} onChange={set('status')} options={[
               { label: 'Active', value: 'active' },
               { label: 'Inactive', value: 'inactive' },
+              { label: 'Expired', value: 'expired' },
             ]} />
           </FormLayout>
         </Modal.Section>

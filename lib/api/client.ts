@@ -1,6 +1,8 @@
 export const TOKEN_COOKIE = 'admin_token'
 
 export function getApiBaseUrl(): string {
+  // Client-side: route through Next.js proxy (same-origin, no CORS issues)
+  if (typeof window !== 'undefined') return '/api/proxy'
   const base = process.env.NEXT_PUBLIC_API_URL
   if (!base) throw new Error('NEXT_PUBLIC_API_URL is not set')
   return base.replace(/\/+$/, '')
@@ -67,19 +69,24 @@ export interface ApiFetchOptions {
 }
 
 export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): Promise<{ data: T; meta?: PageMeta }> {
-  const url = new URL(getApiBaseUrl() + path)
+  const base = getApiBaseUrl()
+  const url = new URL(base + path, base.startsWith('/') ? window.location.origin : undefined)
+
   for (const [key, value] of Object.entries(options.query ?? {})) {
     if (value !== undefined && value !== '') url.searchParams.set(key, String(value))
   }
 
   const token = getToken()
+
+  const headers: Record<string, string> = {
+    Accept: 'application/json',
+    ...(options.body !== undefined && { 'Content-Type': 'application/json' }),
+    ...(token && { Authorization: `Bearer ${token}` }),
+  }
+
   const res = await fetch(url, {
     method: options.method ?? 'GET',
-    headers: {
-      Accept: 'application/json',
-      ...(options.body !== undefined && { 'Content-Type': 'application/json' }),
-      ...(token && { Authorization: `Bearer ${token}` }),
-    },
+    headers,
     ...(options.body !== undefined && { body: JSON.stringify(options.body) }),
   })
 

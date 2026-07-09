@@ -5,9 +5,9 @@ import { useParams, useRouter } from 'next/navigation'
 import {
   Page, Card, Text, SkeletonBodyText, Banner,
 } from '@shopify/polaris'
-import { getCategoryFields, getCategories } from '@/lib/supabase/admin-queries'
+import { getCategoryFields, getCategories } from '@/lib/api/admin'
 import { Badge } from '@shopify/polaris'
-import type { Category } from '@/lib/supabase/admin-queries'
+import type { Category } from '@/lib/api/admin'
 
 interface CategoryFieldOption {
   id: string
@@ -29,7 +29,7 @@ interface CategoryField {
   show_on_card: boolean
   show_on_detail: boolean
   sort_order: number
-  category_field_options: CategoryFieldOption[]
+  options: CategoryFieldOption[]
 }
 
 interface StatRowProps {
@@ -132,15 +132,15 @@ export function Content() {
               <StatRow label="Sort Order" value={String(field.sort_order)} />
             </div>
 
-            {field.field_type === 'select' && field.category_field_options.length > 0 && (
+            {field.field_type === 'select' && field.options.length > 0 && (
               <div className="border-t border-gray-100">
                 <div className="px-5 py-3 bg-gray-50">
                   <Text variant="bodySm" as="span" fontWeight="semibold" tone="subdued">
-                    Options ({field.category_field_options.length})
+                    Options ({field.options.length})
                   </Text>
                 </div>
                 <div className="divide-y divide-gray-100">
-                  {field.category_field_options.map((opt) => (
+                  {field.options.map((opt) => (
                     <div key={opt.id} className="px-5 py-2 flex items-center justify-between">
                       <Text variant="bodyMd" as="span">{opt.label}</Text>
                       <Text variant="bodySm" as="span" tone="subdued">{opt.value}</Text>

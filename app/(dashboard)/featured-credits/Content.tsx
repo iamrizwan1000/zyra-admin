@@ -5,7 +5,7 @@ import {
   Page, Card, Text, Button, TextField, Select, Checkbox,
   Banner, BlockStack, FormLayout, InlineStack,
 } from '@shopify/polaris'
-import { getUserPackageUsage, adjustFeaturedCredits } from '@/lib/supabase/admin-queries'
+import { getUserPackageUsage, adjustFeaturedCredits } from '@/lib/api/admin'
 
 export function Content() {
   const [userId, setUserId] = useState('')
@@ -45,15 +45,15 @@ export function Content() {
     setSuccess(null)
     try {
       await adjustFeaturedCredits({
-        p_user_id: userId.trim(),
-        p_adjustment_type: adjustmentType,
-        ...(adjustmentType === 'extra_credits' && { p_extra_credits: Number(extraCredits) }),
-        ...(adjustmentType === 'limit_override' && { p_limit_override: Number(limitOverride) }),
-        ...(adjustmentType === 'unlimited' && { p_is_unlimited: isUnlimited }),
-        ...(startsAt && { p_starts_at: startsAt }),
-        ...(expiresAt && { p_expires_at: expiresAt }),
-        ...(reason && { p_reason: reason }),
-        ...(adminNote && { p_admin_note: adminNote }),
+        user_id: userId.trim(),
+        adjustment_type: adjustmentType as 'extra_credits' | 'limit_override' | 'unlimited',
+        ...(adjustmentType === 'extra_credits' && { extra_credits: Number(extraCredits) }),
+        ...(adjustmentType === 'limit_override' && { limit_override: Number(limitOverride) }),
+        ...(adjustmentType === 'unlimited' && { is_unlimited: isUnlimited }),
+        ...(startsAt && { starts_at: startsAt }),
+        ...(expiresAt && { expires_at: expiresAt }),
+        ...(reason && { reason: reason }),
+        ...(adminNote && { admin_note: adminNote }),
       })
       setSuccess('Featured credits adjusted successfully')
     } catch (err) {
