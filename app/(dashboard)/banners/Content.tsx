@@ -9,7 +9,7 @@ import { getNotificationCampaigns, createNotificationCampaign } from '@/lib/api/
 import { StatusBadge } from '@/components/admin/StatusBadge'
 
 interface CampaignRecord {
-  id: string
+  id: number
   campaign_name: string
   title: string
   message: string

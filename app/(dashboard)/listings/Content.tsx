@@ -68,7 +68,7 @@ export function Content() {
     return () => { cancelled = true }
   }, [])
 
-  const handleApprove = async (id: string) => {
+  const handleApprove = async (id: number) => {
     try { await approveListing(id); await loadListings() }
     catch (err) { setError(err instanceof Error ? err.message : 'Failed') }
   }

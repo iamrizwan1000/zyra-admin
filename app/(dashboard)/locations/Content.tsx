@@ -11,11 +11,9 @@ import {
   getMarkets, createMarket, updateMarket,
 } from '@/lib/api/admin'
 import { StatusBadge } from '@/components/admin/StatusBadge'
-
-interface CityRecord { id: string; name: string; country_code: string; sort_order: number; status: string }
-interface AreaRecord { id: string; name: string; city_id: string; sort_order: number; status: string }
-interface MarketRecord { id: string; name: string; area_id: string; city_id: string; sort_order: number }
-
+interface CityRecord { id: number; name: string; country_code: string; sort_order: number; status: string }
+interface AreaRecord { id: number; name: string; city_id: number; sort_order: number; status: string }
+interface MarketRecord { id: number; name: string; area_id: number | null; city_id: number; sort_order: number }
 interface StatRowProps {
   label: string
   value: string
@@ -37,7 +35,7 @@ export function Content() {
   // Cities
   const [cities, setCities] = useState<CityRecord[]>([])
   const [citiesLoading, setCitiesLoading] = useState(true)
-  const [selectedCityId, setSelectedCityId] = useState<string | null>(null)
+  const [selectedCityId, setSelectedCityId] = useState<number | null>(null)
 
   // Areas
   const [areas, setAreas] = useState<AreaRecord[]>([])
@@ -46,12 +44,12 @@ export function Content() {
   // Markets
   const [markets, setMarkets] = useState<MarketRecord[]>([])
   const [marketsLoading, setMarketsLoading] = useState(false)
-  const [selectedAreaId, setSelectedAreaId] = useState<string | null>(null)
+  const [selectedAreaId, setSelectedAreaId] = useState<number | null>(null)
 
   // Modal state
   const [modalOpen, setModalOpen] = useState(false)
   const [modalLevel, setModalLevel] = useState<'city' | 'area' | 'market'>('city')
-  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editingId, setEditingId] = useState<number | null>(null)
   const [form, setForm] = useState<Record<string, string>>({})
   const [saving, setSaving] = useState(false)
 
@@ -79,7 +77,7 @@ export function Content() {
     }
   }
 
-  const fetchAreas = useCallback(async (cityId: string) => {
+  const fetchAreas = useCallback(async (cityId: number) => {
     setAreasLoading(true)
     setSelectedAreaId(null)
     setMarkets([])
@@ -92,7 +90,7 @@ export function Content() {
     }
   }, [])
 
-  const fetchMarkets = useCallback(async (areaId: string) => {
+  const fetchMarkets = useCallback(async (areaId: number) => {
     setMarketsLoading(true)
     try {
       setMarkets(await getMarkets(areaId))
@@ -103,7 +101,7 @@ export function Content() {
     }
   }, [])
 
-  const handleCityClick = useCallback((cityId: string) => {
+  const handleCityClick = useCallback((cityId: number) => {
     if (selectedCityId === cityId) {
       setSelectedCityId(null)
       setAreas([])
@@ -115,7 +113,7 @@ export function Content() {
     }
   }, [selectedCityId, fetchAreas])
 
-  const handleAreaClick = useCallback((areaId: string) => {
+  const handleAreaClick = useCallback((areaId: number) => {
     if (selectedAreaId === areaId) {
       setSelectedAreaId(null)
       setMarkets([])

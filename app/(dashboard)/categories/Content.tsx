@@ -49,10 +49,10 @@ export function Content() {
   const [error, setError] = useState<string | null>(null)
 
   const [modalOpen, setModalOpen] = useState(false)
-  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editingId, setEditingId] = useState<number | null>(null)
   const [form, setForm] = useState<CategoryFormData>(EMPTY_FORM)
   const [saving, setSaving] = useState(false)
-  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
+  const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null)
 
   useEffect(() => {
     ;(async () => {
@@ -93,7 +93,7 @@ export function Content() {
       slug: cat.slug,
       status: cat.status,
       sort_order: String(cat.sort_order),
-      parent_id: cat.parent_id ?? '',
+      parent_id: cat.parent_id != null ? String(cat.parent_id) : '',
     })
     setModalOpen(true)
   }, [])
@@ -107,10 +107,10 @@ export function Content() {
         slug: form.slug || form.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
         status: form.status,
         sort_order: Number(form.sort_order),
-        parent_id: form.parent_id || null,
+        parent_id: form.parent_id ? Number(form.parent_id) : null,
       }
       if (editingId) {
-        await updateCategory(editingId, data)
+        await updateCategory(String(editingId), data)
       } else {
         await createCategory(data)
       }
@@ -123,9 +123,9 @@ export function Content() {
     }
   }
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: number) => {
     try {
-      await deleteCategory(id)
+      await deleteCategory(String(id))
       setDeleteConfirmId(null)
       await fetch()
     } catch (err) {
@@ -145,16 +145,16 @@ export function Content() {
 
   const parentOptions = categories
     .filter((c) => c.id !== editingId)
-    .map((c) => ({ label: c.name, value: c.id }))
+    .map((c) => ({ label: c.name, value: String(c.id) }))
 
-  const getParentName = (parentId: string | null) => {
+  const getParentName = (parentId: string) => {
     if (!parentId) return '—'
-    const parent = categories.find((c) => c.id === parentId)
+    const parent = categories.find((c) => String(c.id) === parentId)
     return parent?.name ?? 'Unknown'
   }
 
   const rootCategories = categories.filter((c) => !c.parent_id)
-  const getChildren = (parentId: string) => categories.filter((c) => c.parent_id === parentId)
+  const getChildren = (parentId: number | null) => categories.filter((c) => c.parent_id === parentId)
 
   if (loading) {
     return (
@@ -253,8 +253,8 @@ function CategoryCard({
   cat: Category
   children: Category[]
   onEdit: (cat: Category) => void
-  onDelete: (id: string) => void
-  onManageFields: (id: string) => void
+  onDelete: (id: number) => void
+  onManageFields: (id: number) => void
 }) {
   return (
     <div className={`rounded-xl border ${cat.status === 'active' ? 'border-gray-200' : 'border-dashed border-gray-300'} bg-white overflow-hidden`}>

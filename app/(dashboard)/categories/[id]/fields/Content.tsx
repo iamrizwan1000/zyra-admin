@@ -75,7 +75,7 @@ export function Content() {
           getCategories(),
         ])
         setFields(fieldsData as unknown as CategoryField[])
-        setCategory(categoriesData.find((c: Category) => c.id === categoryId) ?? null)
+        setCategory(categoriesData.find((c: Category) => String(c.id) === categoryId) ?? null)
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load fields')
       } finally {
