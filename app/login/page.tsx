@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Card, Page, TextField, Button, Banner, Box, Text } from '@shopify/polaris'
-import { supabase } from '@/lib/supabase/client'
+import { login, logout } from '@/lib/api/auth'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -15,9 +15,16 @@ export default function LoginPage() {
   const handleLogin = async () => {
     setLoading(true)
     setError('')
-    const { error: signInError } = await supabase.auth.signInWithPassword({ email, password })
-    if (signInError) {
-      setError(signInError.message)
+    try {
+      const user = await login(email, password)
+      if (!user.is_admin) {
+        await logout()
+        setError('This account does not have admin access.')
+        setLoading(false)
+        return
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Login failed')
       setLoading(false)
       return
     }

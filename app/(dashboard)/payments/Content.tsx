@@ -7,10 +7,11 @@ import {
   getPendingPayments,
   approvePayment,
   rejectPayment,
-} from '@/lib/supabase/admin-queries'
+} from '@/lib/api/admin'
+import { openPrivateFile } from '@/lib/api/storage'
 import { StatusBadge } from '@/components/admin/StatusBadge'
 import { ReasonModal } from '@/components/admin/ReasonModal'
-import type { PendingPayment } from '@/lib/supabase/admin-queries'
+import type { PendingPayment } from '@/lib/api/admin'
 
 export function Content() {
   const router = useRouter()
@@ -18,7 +19,7 @@ export function Content() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [actionTarget, setActionTarget] = useState<PendingPayment | null>(null)
-  const [modalType, setModalType] = useState<'approve' | 'reject' | null>(null)
+  const [modalType, setModalType] = useState<'reject' | null>(null)
   const [statusFilter, setStatusFilter] = useState('')
   const [methodFilter, setMethodFilter] = useState('')
 
@@ -39,7 +40,7 @@ export function Content() {
     setLoading(true)
     setError(null)
     try {
-      setPayments(await getPendingPayments(20, 0))
+      setPayments(await getPendingPayments())
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load payments')
     } finally {
@@ -53,7 +54,7 @@ export function Content() {
       setLoading(true)
       setError(null)
       try {
-        const result = await getPendingPayments(20, 0)
+        const result = await getPendingPayments()
         if (!cancelled) setPayments(result)
       } catch (err) {
         if (!cancelled) setError(err instanceof Error ? err.message : 'Failed to load payments')
@@ -64,16 +65,12 @@ export function Content() {
     return () => { cancelled = true }
   }, [])
 
-  const handleApprove = async (note?: string) => {
-    if (!actionTarget) return
+  const handleApprove = async (id: string) => {
     try {
-      await approvePayment(actionTarget.id, note)
+      await approvePayment(id)
       await loadPayments()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed')
-    } finally {
-      setActionTarget(null)
-      setModalType(null)
     }
   }
 
@@ -148,14 +145,14 @@ export function Content() {
                 <td className="p-3"><Text variant="bodyMd" as="span">{p.method}</Text></td>
                 <td className="p-3">
                   {p.proof_url
-                    ? <a href={p.proof_url} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()} className="text-blue-600 hover:underline text-sm">View Proof</a>
+                    ? <button type="button" onClick={(e) => { e.stopPropagation(); openPrivateFile(p.proof_url).catch(() => setError('Failed to open proof')) }} className="text-blue-600 hover:underline text-sm">View Proof</button>
                     : <Text variant="bodyMd" as="span">-</Text>}
                 </td>
                 <td className="p-3"><StatusBadge status={p.status} /></td>
                 <td className="p-3"><Text variant="bodyMd" as="span">{new Date(p.submitted_at).toLocaleDateString()}</Text></td>
                 <td className="p-3">
                   <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
-                    <Button size="slim" onClick={() => { setActionTarget(p); setModalType('approve') }}>Approve</Button>
+                    <Button size="slim" onClick={() => handleApprove(p.id)}>Approve</Button>
                     <Button size="slim" onClick={() => { setActionTarget(p); setModalType('reject') }}>Reject</Button>
                   </div>
                 </td>
@@ -169,13 +166,6 @@ export function Content() {
         title="Reject Payment"
         submitLabel="Reject"
         onSubmit={handleReject}
-        onClose={() => { setActionTarget(null); setModalType(null) }}
-      />
-      <ReasonModal
-        open={modalType === 'approve'}
-        title="Approve Payment"
-        submitLabel="Approve"
-        onSubmit={handleApprove}
         onClose={() => { setActionTarget(null); setModalType(null) }}
       />
     </Page>

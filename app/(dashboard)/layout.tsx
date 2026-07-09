@@ -23,7 +23,7 @@ import {
   LocationIcon,
   SettingsIcon,
 } from '@shopify/polaris-icons'
-import { supabase } from '@/lib/supabase/client'
+import { logout } from '@/lib/api/auth'
 
 const NAV_ITEMS = [
   { label: 'Dashboard', path: '/dashboard', icon: HomeIcon },
@@ -49,7 +49,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [userMenuOpen, setUserMenuOpen] = useState(false)
 
   const handleLogout = useCallback(async () => {
-    await supabase.auth.signOut()
+    await logout()
     router.push('/login')
   }, [router])
 

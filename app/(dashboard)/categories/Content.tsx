@@ -8,9 +8,9 @@ import {
 } from '@shopify/polaris'
 import {
   getCategories, createCategory, updateCategory, deleteCategory,
-} from '@/lib/supabase/admin-queries'
+} from '@/lib/api/admin'
 import { StatusBadge } from '@/components/admin/StatusBadge'
-import type { Category } from '@/lib/supabase/admin-queries'
+import type { Category } from '@/lib/api/admin'
 
 interface CategoryFormData {
   name: string

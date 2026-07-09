@@ -1,6 +1,6 @@
 import { Page, Layout, Card, Text, Button, BlockStack } from '@shopify/polaris'
 import { StatCard } from '@/components/admin/StatCard'
-import type { DashboardStats, PendingCounts } from '@/lib/supabase/queries'
+import type { DashboardStats, PendingCounts } from '@/lib/api/server'
 
 export function DashboardContent({
   stats,

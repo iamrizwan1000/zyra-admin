@@ -4,23 +4,13 @@ import { useState, useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { Page, Card, Text, Select, TextField, SkeletonBodyText, Banner } from '@shopify/polaris'
-import { getAllShops } from '@/lib/supabase/admin-queries'
+import { getPendingShops } from '@/lib/api/admin'
 import { StatusBadge } from '@/components/admin/StatusBadge'
-
-interface ShopRow {
-  id: string
-  shop_name: string
-  logo_url: string | null
-  profiles: { full_name: string } | null
-  city_name: string
-  approval_status: string
-  status: string
-  created_at: string
-}
+import type { PendingShop } from '@/lib/api/admin'
 
 export function Content() {
   const router = useRouter()
-  const [shops, setShops] = useState<ShopRow[]>([])
+  const [shops, setShops] = useState<PendingShop[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [approvalFilter, setApprovalFilter] = useState('')
@@ -49,8 +39,8 @@ export function Content() {
       setLoading(true)
       setError(null)
       try {
-        const result = await getAllShops()
-        if (!cancelled) setShops((result ?? []) as ShopRow[])
+        const result = await getPendingShops()
+        if (!cancelled) setShops(result ?? [])
       } catch (err) {
         if (!cancelled) setError(err instanceof Error ? err.message : 'Failed to load shops')
       } finally {
@@ -128,7 +118,7 @@ export function Content() {
                     : <div className="w-10 h-10 bg-gray-100 rounded" />}
                 </td>
                 <td className="p-3"><Text variant="bodyMd" as="span" fontWeight="semibold">{s.shop_name}</Text></td>
-                <td className="p-3"><Text variant="bodyMd" as="span">{s.profiles?.full_name || '-'}</Text></td>
+                <td className="p-3"><Text variant="bodyMd" as="span">{s.owner_name || '-'}</Text></td>
                 <td className="p-3"><Text variant="bodyMd" as="span">{s.city_name}</Text></td>
                 <td className="p-3"><StatusBadge status={s.approval_status} /></td>
                 <td className="p-3"><StatusBadge status={s.status} /></td>

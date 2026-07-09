@@ -20,7 +20,8 @@ import {
   requestShopChanges,
   suspendShop,
   reactivateShop,
-} from '@/lib/supabase/admin-queries'
+} from '@/lib/api/admin'
+import { openPrivateFile } from '@/lib/api/storage'
 import { StatusBadge } from '@/components/admin/StatusBadge'
 import { ReasonModal } from '@/components/admin/ReasonModal'
 
@@ -76,7 +77,7 @@ export function Content() {
     try {
       switch (action) {
         case 'approve':
-          await approveShop(params.id, reason)
+          await approveShop(params.id)
           break
         case 'reject':
           await rejectShop(params.id, reason!)
@@ -88,7 +89,7 @@ export function Content() {
           await suspendShop(params.id, reason!)
           break
         case 'reactivate':
-          await reactivateShop(params.id, reason)
+          await reactivateShop(params.id)
           break
       }
       const result = await getAdminShopDetail(params.id)
@@ -228,14 +229,13 @@ export function Content() {
             {s?.business_proof_url && (
               <Card>
                 <Text variant="headingSm" as="h2">Business Proof</Text>
-                <a
-                  href={s.business_proof_url}
-                  target="_blank"
-                  rel="noreferrer"
+                <button
+                  type="button"
+                  onClick={() => openPrivateFile(s.business_proof_url!).catch(() => setError('Failed to open business proof'))}
                   className="text-blue-600 hover:underline text-sm mt-2 inline-block"
                 >
                   View Business Proof
-                </a>
+                </button>
               </Card>
             )}
           </BlockStack>

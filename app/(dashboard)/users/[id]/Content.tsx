@@ -11,7 +11,7 @@ import {
   BlockStack,
   SkeletonBodyText,
 } from '@shopify/polaris'
-import { getUserById } from '@/lib/supabase/admin-queries'
+import { getUserById } from '@/lib/api/admin'
 import { StatusBadge } from '@/components/admin/StatusBadge'
 
 interface UserShop {

@@ -1,7 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import type { DashboardStats, PendingCounts } from '@/lib/supabase/queries'
+import type { DashboardStats, PendingCounts } from '@/lib/api/server'
 
 const DashboardUI = dynamic(
   () => import('./DashboardContent').then((m) => ({ default: m.DashboardContent })),

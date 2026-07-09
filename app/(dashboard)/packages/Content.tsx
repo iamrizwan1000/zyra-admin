@@ -7,9 +7,9 @@ import {
 } from '@shopify/polaris'
 import {
   getPackages, createPackage, updatePackage, deletePackage,
-} from '@/lib/supabase/admin-queries'
+} from '@/lib/api/admin'
 import { StatusBadge } from '@/components/admin/StatusBadge'
-import type { Package } from '@/lib/supabase/admin-queries'
+import type { Package } from '@/lib/api/admin'
 
 interface PackageFormData {
   name: string

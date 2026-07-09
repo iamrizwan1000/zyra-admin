@@ -20,7 +20,7 @@ import {
   requestListingChanges,
   removeListing,
   markListingSuspicious,
-} from '@/lib/supabase/admin-queries'
+} from '@/lib/api/admin'
 import { StatusBadge } from '@/components/admin/StatusBadge'
 import { ReasonModal } from '@/components/admin/ReasonModal'
 

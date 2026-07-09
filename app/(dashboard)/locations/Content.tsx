@@ -9,7 +9,7 @@ import {
   getCities, createCity, updateCity,
   getAreas, createArea, updateArea,
   getMarkets, createMarket, updateMarket,
-} from '@/lib/supabase/admin-queries'
+} from '@/lib/api/admin'
 import { StatusBadge } from '@/components/admin/StatusBadge'
 
 interface CityRecord { id: string; name: string; country_code: string; sort_order: number; status: string }

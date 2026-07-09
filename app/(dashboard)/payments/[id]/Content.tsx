@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import Image from 'next/image'
 import {
   Page,
   Card,
@@ -17,9 +16,10 @@ import {
   getAdminPaymentDetail,
   approvePayment,
   rejectPayment,
-} from '@/lib/supabase/admin-queries'
+} from '@/lib/api/admin'
 import { StatusBadge } from '@/components/admin/StatusBadge'
 import { ReasonModal } from '@/components/admin/ReasonModal'
+import { AuthImage } from '@/components/admin/AuthImage'
 
 export function Content() {
   const router = useRouter()
@@ -27,7 +27,7 @@ export function Content() {
   const [payment, setPayment] = useState<unknown>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [modalType, setModalType] = useState<'approve' | 'reject' | null>(null)
+  const [modalType, setModalType] = useState<'reject' | null>(null)
 
   const reloadPayment = async (id: string) => {
     setLoading(true)
@@ -60,15 +60,13 @@ export function Content() {
     return () => { cancelled = true }
   }, [params?.id])
 
-  const handleApprove = async (note?: string) => {
+  const handleApprove = async () => {
     if (!params?.id) return
     try {
-      await approvePayment(params.id, note)
+      await approvePayment(params.id)
       await reloadPayment(params.id)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed')
-    } finally {
-      setModalType(null)
     }
   }
 
@@ -117,7 +115,7 @@ export function Content() {
           <BlockStack gap="400">
             <Card>
               <div className="flex justify-end gap-2">
-                <Button onClick={() => setModalType('approve')}>Approve</Button>
+                <Button onClick={handleApprove}>Approve</Button>
                 <Button onClick={() => setModalType('reject')}>Reject</Button>
               </div>
             </Card>
@@ -125,14 +123,13 @@ export function Content() {
             {!!p?.proof_url && (
               <Card>
                 <Text variant="headingSm" as="h2">Payment Proof</Text>
-                <Image
+                <AuthImage
                   src={renderVal(p.proof_url)}
                   alt="Payment proof"
                   width={800}
                   height={500}
                   className="max-w-full h-auto rounded border border-gray-200 mt-3"
                   style={{ maxHeight: 500 }}
-                  unoptimized
                 />
               </Card>
             )}
@@ -175,13 +172,6 @@ export function Content() {
 
       </Layout>
 
-      <ReasonModal
-        open={modalType === 'approve'}
-        title="Approve Payment"
-        submitLabel="Approve"
-        onSubmit={handleApprove}
-        onClose={() => setModalType(null)}
-      />
       <ReasonModal
         open={modalType === 'reject'}
         title="Reject Payment"

@@ -3,24 +3,13 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { Page, Card, Text, Select, TextField, SkeletonBodyText, Banner } from '@shopify/polaris'
-import { getUsers } from '@/lib/supabase/admin-queries'
+import { getUsers } from '@/lib/api/admin'
 import { StatusBadge } from '@/components/admin/StatusBadge'
-
-interface UserRow {
-  id: string
-  full_name: string
-  phone: string | null
-  email: string | null
-  account_status: string
-  is_admin: boolean
-  created_at: string
-  listings: { count: number }[]
-  shops: { count: number }[]
-}
+import type { AdminUser } from '@/lib/api/admin'
 
 export function Content() {
   const router = useRouter()
-  const [users, setUsers] = useState<UserRow[]>([])
+  const [users, setUsers] = useState<AdminUser[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [statusFilter, setStatusFilter] = useState('')
@@ -32,33 +21,26 @@ export function Content() {
       if (statusFilter && u.account_status !== statusFilter) return false
       if (adminFilter === 'admin' && !u.is_admin) return false
       if (adminFilter === 'user' && u.is_admin) return false
-      if (searchQuery) {
-        const q = searchQuery.toLowerCase()
-        const name = (u.full_name || '').toLowerCase()
-        const phone = (u.phone || '').toLowerCase()
-        const email = (u.email || '').toLowerCase()
-        if (!name.includes(q) && !phone.includes(q) && !email.includes(q)) return false
-      }
       return true
     })
-  }, [users, statusFilter, adminFilter, searchQuery])
+  }, [users, statusFilter, adminFilter])
 
   useEffect(() => {
     let cancelled = false
-    ;(async () => {
-      setLoading(true)
+    // Search is server-side now; debounce so we don't fire a request per keystroke
+    const timer = setTimeout(async () => {
       setError(null)
       try {
-        const result = await getUsers()
-        if (!cancelled) setUsers((result ?? []) as UserRow[])
+        const { data } = await getUsers(searchQuery || undefined)
+        if (!cancelled) setUsers(data ?? [])
       } catch (err) {
         if (!cancelled) setError(err instanceof Error ? err.message : 'Failed to load users')
       } finally {
         if (!cancelled) setLoading(false)
       }
-    })()
-    return () => { cancelled = true }
-  }, [])
+    }, searchQuery ? 400 : 0)
+    return () => { cancelled = true; clearTimeout(timer) }
+  }, [searchQuery])
 
   if (loading) {
     return (
@@ -114,8 +96,8 @@ export function Content() {
               </tr>
             )}
             {filteredUsers.map((u) => {
-              const listingCount = u.listings?.[0]?.count ?? 0
-              const shopCount = u.shops?.[0]?.count ?? 0
+              const listingCount = u.listing_count ?? 0
+              const shopCount = u.shop_count ?? 0
               return (
                 <tr
                   key={u.id}

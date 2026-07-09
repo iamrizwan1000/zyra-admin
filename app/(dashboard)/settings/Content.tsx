@@ -5,9 +5,8 @@ import {
   Page, Card, Text, Button, Modal, FormLayout, TextField,
   SkeletonBodyText, Banner, BlockStack, InlineStack, EmptyState,
 } from '@shopify/polaris'
-import { getSettings, upsertSetting } from '@/lib/supabase/admin-queries'
-
-interface SettingRecord { key: string; value: string; updated_at?: string; created_at?: string }
+import { getSettings, upsertSetting } from '@/lib/api/admin'
+import type { SettingRecord } from '@/lib/api/admin'
 
 export function Content() {
   const [settings, setSettings] = useState<SettingRecord[]>([])

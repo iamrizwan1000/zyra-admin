@@ -9,10 +9,10 @@ import {
   approveListing,
   rejectListing,
   requestListingChanges,
-} from '@/lib/supabase/admin-queries'
+} from '@/lib/api/admin'
 import { StatusBadge } from '@/components/admin/StatusBadge'
 import { ReasonModal } from '@/components/admin/ReasonModal'
-import type { PendingListing } from '@/lib/supabase/admin-queries'
+import type { PendingListing } from '@/lib/api/admin'
 
 export function Content() {
   const router = useRouter()
@@ -43,7 +43,7 @@ export function Content() {
     setLoading(true)
     setError(null)
     try {
-      setListings(await getPendingListings(20, 0))
+      setListings(await getPendingListings())
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load listings')
     } finally {
@@ -57,7 +57,7 @@ export function Content() {
       setLoading(true)
       setError(null)
       try {
-        const result = await getPendingListings(20, 0)
+        const result = await getPendingListings()
         if (!cancelled) setListings(result)
       } catch (err) {
         if (!cancelled) setError(err instanceof Error ? err.message : 'Failed to load listings')

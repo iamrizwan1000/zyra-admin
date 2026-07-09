@@ -18,7 +18,7 @@ export function proxy(request: NextRequest) {
     return NextResponse.next()
   }
 
-  const hasSession = request.cookies.getAll().some((c) => c.name.startsWith('sb-'))
+  const hasSession = Boolean(request.cookies.get('admin_token')?.value)
 
   if (!hasSession) {
     return NextResponse.redirect(new URL('/login', request.url))

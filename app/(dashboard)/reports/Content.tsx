@@ -7,15 +7,13 @@ import {
 } from '@shopify/polaris'
 import {
   getPendingReports, resolveReport,
-} from '@/lib/supabase/admin-queries'
+} from '@/lib/api/admin'
 import { StatusBadge } from '@/components/admin/StatusBadge'
-import type { PendingReport } from '@/lib/supabase/admin-queries'
+import type { PendingReport } from '@/lib/api/admin'
 
 const RESOLUTION_OPTIONS = [
   { label: 'Dismissed', value: 'dismissed' },
-  { label: 'Warning Issued', value: 'warning_issued' },
-  { label: 'Listing Removed', value: 'listing_removed' },
-  { label: 'User Banned', value: 'user_banned' },
+  { label: 'Resolved', value: 'resolved' },
 ]
 
 export function Content() {
@@ -36,7 +34,7 @@ export function Content() {
 
   const [modalOpen, setModalOpen] = useState(false)
   const [selectedReport, setSelectedReport] = useState<PendingReport | null>(null)
-  const [resolution, setResolution] = useState('dismissed')
+  const [resolution, setResolution] = useState<'resolved' | 'dismissed'>('dismissed')
   const [note, setNote] = useState('')
   const [saving, setSaving] = useState(false)
 
@@ -45,7 +43,7 @@ export function Content() {
       setLoading(true)
       setError(null)
       try {
-        setReports(await getPendingReports(20, 0))
+        setReports(await getPendingReports())
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load reports')
       } finally {
@@ -69,7 +67,7 @@ export function Content() {
       await resolveReport(selectedReport.id, resolution, note || undefined)
       setModalOpen(false)
       setSelectedReport(null)
-      setReports(await getPendingReports(20, 0))
+      setReports(await getPendingReports())
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to resolve report')
     } finally {
@@ -166,7 +164,7 @@ export function Content() {
             <Select
               label="Resolution"
               value={resolution}
-              onChange={setResolution}
+              onChange={(value) => setResolution(value as 'resolved' | 'dismissed')}
               options={RESOLUTION_OPTIONS}
             />
             <TextField
