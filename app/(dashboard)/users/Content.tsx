@@ -100,9 +100,9 @@ export function Content() {
               const shopCount = u.shop_count ?? 0
               return (
                 <tr
-                  key={u.id}
+                  key={u.public_id}
                   className="border-b border-gray-200 hover:bg-gray-50 cursor-pointer"
-                  onClick={() => router.push(`/users/${u.id}`)}
+                  onClick={() => router.push(`/users/${u.public_id}`)}
                 >
                   <td className="p-3"><Text variant="bodyMd" as="span" fontWeight="semibold">{u.full_name || 'Unnamed'}</Text></td>
                   <td className="p-3"><Text variant="bodyMd" as="span">{u.phone || '-'}</Text></td>

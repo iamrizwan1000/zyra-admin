@@ -64,7 +64,7 @@ export function Content() {
     setSaving(true)
     setError(null)
     try {
-      await resolveReport(selectedReport.id, resolution, note || undefined)
+      await resolveReport(selectedReport.public_id, resolution, note || undefined)
       setModalOpen(false)
       setSelectedReport(null)
       setReports(await getPendingReports())
@@ -128,7 +128,7 @@ export function Content() {
               </tr>
             )}
             {filteredReports.map((r) => (
-              <tr key={r.id} className="border-b border-gray-200 hover:bg-gray-50">
+              <tr key={r.public_id} className="border-b border-gray-200 hover:bg-gray-50">
                 <td className="p-3"><Text variant="bodyMd" as="span">{r.reporter_name}</Text></td>
                 <td className="p-3"><Text variant="bodyMd" as="span">{r.listing_title}</Text></td>
                 <td className="p-3"><Text variant="bodyMd" as="span">{r.reason}</Text></td>

@@ -23,7 +23,7 @@ import { AuthImage } from '@/components/admin/AuthImage'
 
 export function Content() {
   const router = useRouter()
-  const params = useParams<{ id: string }>()
+  const params = useParams<{ public_id: string }>()
   const [payment, setPayment] = useState<unknown>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -44,7 +44,7 @@ export function Content() {
   useEffect(() => {
     let cancelled = false
     ;(async () => {
-      const id = params?.id
+      const id = params?.public_id
       if (!id || cancelled) return
       setLoading(true)
       setError(null)
@@ -58,23 +58,23 @@ export function Content() {
       }
     })()
     return () => { cancelled = true }
-  }, [params?.id])
+  }, [params?.public_id])
 
   const handleApprove = async () => {
-    if (!params?.id) return
+    if (!params?.public_id) return
     try {
-      await approvePayment(params.id)
-      await reloadPayment(params.id)
+      await approvePayment(params.public_id)
+      await reloadPayment(params.public_id)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed')
     }
   }
 
   const handleReject = async (reason: string) => {
-    if (!params?.id) return
+    if (!params?.public_id) return
     try {
-      await rejectPayment(params.id, reason)
-      await reloadPayment(params.id)
+      await rejectPayment(params.public_id, reason)
+      await reloadPayment(params.public_id)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed')
     } finally {
@@ -105,7 +105,7 @@ export function Content() {
 
   return (
     <Page
-      title={`Payment ${params?.id ? renderVal(params.id).slice(0, 8) + '...' : ''}`}
+      title={`Payment ${params?.public_id ? renderVal(params.public_id).slice(0, 8) + '...' : ''}`}
       backAction={{ content: 'Back', onAction: () => router.push('/payments') }}
     >
       {error && <Banner tone="critical" onDismiss={() => setError(null)}>{error}</Banner>}

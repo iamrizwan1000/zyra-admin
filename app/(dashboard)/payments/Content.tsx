@@ -65,9 +65,9 @@ export function Content() {
     return () => { cancelled = true }
   }, [])
 
-  const handleApprove = async (id: string) => {
+  const handleApprove = async (public_id: string) => {
     try {
-      await approvePayment(id)
+      await approvePayment(public_id)
       await loadPayments()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed')
@@ -77,7 +77,7 @@ export function Content() {
   const handleReject = async (reason: string) => {
     if (!actionTarget) return
     try {
-      await rejectPayment(actionTarget.id, reason)
+      await rejectPayment(actionTarget.public_id, reason)
       await loadPayments()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed')
@@ -135,9 +135,9 @@ export function Content() {
             )}
             {filteredPayments.map((p) => (
               <tr
-                key={p.id}
+                key={p.public_id}
                 className="border-b border-gray-200 hover:bg-gray-50 cursor-pointer"
-                onClick={() => router.push(`/payments/${p.id}`)}
+                onClick={() => router.push(`/payments/${p.public_id}`)}
               >
                 <td className="p-3"><Text variant="bodyMd" as="span">{p.user_name}</Text></td>
                 <td className="p-3"><Text variant="bodyMd" as="span">{p.package_name}</Text></td>
@@ -152,7 +152,7 @@ export function Content() {
                 <td className="p-3"><Text variant="bodyMd" as="span">{new Date(p.submitted_at).toLocaleDateString()}</Text></td>
                 <td className="p-3">
                   <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
-                    <Button size="slim" onClick={() => handleApprove(p.id)}>Approve</Button>
+                    <Button size="slim" onClick={() => handleApprove(p.public_id)}>Approve</Button>
                     <Button size="slim" onClick={() => { setActionTarget(p); setModalType('reject') }}>Reject</Button>
                   </div>
                 </td>

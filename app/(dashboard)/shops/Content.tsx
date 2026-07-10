@@ -108,9 +108,9 @@ export function Content() {
             )}
             {filteredShops.map((s) => (
               <tr
-                key={s.id}
+                key={s.public_id}
                 className="border-b border-gray-200 hover:bg-gray-50 cursor-pointer"
-                onClick={() => router.push(`/shops/${s.id}`)}
+                onClick={() => router.push(`/shops/${s.public_id}`)}
               >
                 <td className="p-3">
                   {s.logo_url

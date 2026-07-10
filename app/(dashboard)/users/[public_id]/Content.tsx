@@ -15,7 +15,7 @@ import { getUserById } from '@/lib/api/admin'
 import { StatusBadge } from '@/components/admin/StatusBadge'
 
 interface UserShop {
-  id: string
+  public_id: string
   shop_name: string
   city_name: string
   approval_status: string
@@ -23,7 +23,7 @@ interface UserShop {
 }
 
 interface UserListing {
-  id: string
+  public_id: string
   title: string
   currency_code: string
   price: number
@@ -45,19 +45,19 @@ interface UserDetail {
 
 export function Content() {
   const router = useRouter()
-  const params = useParams<{ id: string }>()
+  const params = useParams<{ public_id: string }>()
   const [user, setUser] = useState<UserDetail | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     let cancelled = false
-    if (params?.id) {
+    if (params?.public_id) {
       ;(async () => {
         setLoading(true)
         setError(null)
         try {
-          const result = await getUserById(params.id)
+          const result = await getUserById(params.public_id)
           if (!cancelled) setUser(result as UserDetail)
         } catch (err) {
           if (!cancelled) setError(err instanceof Error ? err.message : 'Failed to load user')
@@ -67,7 +67,7 @@ export function Content() {
       })()
     }
     return () => { cancelled = true }
-  }, [params?.id])
+  }, [params?.public_id])
 
   if (loading) {
     return (
@@ -144,9 +144,9 @@ export function Content() {
                   <tbody>
                     {u.shops.map((shop) => (
                       <tr
-                        key={shop.id}
+                        key={shop.public_id}
                         className="border-b border-gray-200 hover:bg-gray-50 cursor-pointer"
-                        onClick={() => router.push(`/shops/${shop.id}`)}
+                        onClick={() => router.push(`/shops/${shop.public_id}`)}
                       >
                         <td className="p-3"><Text variant="bodyMd" as="span" fontWeight="semibold">{shop.shop_name}</Text></td>
                         <td className="p-3"><Text variant="bodyMd" as="span">{shop.city_name}</Text></td>
@@ -177,9 +177,9 @@ export function Content() {
                   <tbody>
                     {u.listings.map((listing) => (
                       <tr
-                        key={listing.id}
+                        key={listing.public_id}
                         className="border-b border-gray-200 hover:bg-gray-50 cursor-pointer"
-                        onClick={() => router.push(`/listings/${listing.id}`)}
+                        onClick={() => router.push(`/listings/${listing.public_id}`)}
                       >
                         <td className="p-3"><Text variant="bodyMd" as="span" fontWeight="semibold">{listing.title}</Text></td>
                         <td className="p-3"><Text variant="bodyMd" as="span">{listing.currency_code} {listing.price}</Text></td>

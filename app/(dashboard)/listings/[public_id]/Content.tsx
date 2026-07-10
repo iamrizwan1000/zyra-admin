@@ -26,7 +26,7 @@ import { ReasonModal } from '@/components/admin/ReasonModal'
 
 export function Content() {
   const router = useRouter()
-  const params = useParams<{ id: string }>()
+  const params = useParams<{ public_id: string }>()
   const [listing, setListing] = useState<unknown>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -48,7 +48,7 @@ export function Content() {
   useEffect(() => {
     let cancelled = false
     ;(async () => {
-      const id = params?.id
+      const id = params?.public_id
       if (!id || cancelled) return
       setLoading(true)
       setError(null)
@@ -62,29 +62,29 @@ export function Content() {
       }
     })()
     return () => { cancelled = true }
-  }, [params?.id])
+  }, [params?.public_id])
 
   const handleAction = async (action: string, reason?: string) => {
-    if (!params?.id) return
+    if (!params?.public_id) return
     try {
       switch (action) {
         case 'approve':
-          await approveListing(params.id, reason)
+          await approveListing(params.public_id, reason)
           break
         case 'reject':
-          await rejectListing(params.id, reason!)
+          await rejectListing(params.public_id, reason!)
           break
         case 'request-changes':
-          await requestListingChanges(params.id, reason!)
+          await requestListingChanges(params.public_id, reason!)
           break
         case 'remove':
-          await removeListing(params.id, reason!)
+          await removeListing(params.public_id, reason!)
           break
         case 'mark-suspicious':
-          await markListingSuspicious(params.id, reason!)
+          await markListingSuspicious(params.public_id, reason!)
           break
       }
-      await reloadListing(params.id)
+      await reloadListing(params.public_id)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed')
     } finally {

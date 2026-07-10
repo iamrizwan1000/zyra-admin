@@ -71,7 +71,7 @@ export function Content() {
   }, [])
 
   const openEdit = useCallback((c: CampaignRow) => {
-    setEditingId(c.id)
+    setEditingId(c.public_id)
     setForm({
       name: c.name,
       offer_type: c.offer_type,
@@ -79,7 +79,7 @@ export function Content() {
       availability_starts_at: c.availability_starts_at ?? '',
       availability_ends_at: c.availability_ends_at ?? '',
       benefit_duration_days: String(c.benefit_duration_days),
-      target_package_id: c.target_package_id ?? '',
+      target_package_id: String(c.target_package_id ?? ''),
       status: c.status,
     })
     setModalOpen(true)
@@ -106,13 +106,13 @@ export function Content() {
         availability_starts_at: form.availability_starts_at || null,
         availability_ends_at: form.availability_ends_at || null,
         benefit_duration_days: Number(form.benefit_duration_days),
-        target_package_id: form.target_package_id || null,
+        target_package_id: form.target_package_id ? Number(form.target_package_id) : null,
         status: form.status,
       }
       if (editingId) {
         await updateCampaign(editingId, data)
       } else {
-        await createCampaign(data as Omit<Campaign, 'id'>)
+        await createCampaign(data as Omit<Campaign, 'id' | 'public_id'>)
       }
       setModalOpen(false)
       await reload()
@@ -123,9 +123,9 @@ export function Content() {
     }
   }
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (public_id: string) => {
     try {
-      await deleteCampaign(id)
+      await deleteCampaign(public_id)
       setDeleteConfirmId(null)
       await reload()
     } catch (err) {
@@ -162,7 +162,7 @@ export function Content() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {campaigns.map((c) => (
-          <div key={c.id} className={`rounded-xl border ${c.status === 'active' ? 'border-gray-200' : 'border-dashed border-gray-300'} bg-white overflow-hidden`}>
+          <div key={c.public_id} className={`rounded-xl border ${c.status === 'active' ? 'border-gray-200' : 'border-dashed border-gray-300'} bg-white overflow-hidden`}>
             <div className={`px-5 py-4 ${c.status === 'active' ? 'bg-white' : 'bg-gray-50'}`}>
               <div className="flex items-start justify-between mb-3">
                 <div className="min-w-0">
@@ -204,7 +204,7 @@ export function Content() {
 
             <div className="px-5 py-3 border-t border-gray-100 bg-gray-50 flex gap-2">
               <Button size="slim" onClick={() => openEdit(c)}>Edit</Button>
-              <Button size="slim" tone="critical" onClick={() => setDeleteConfirmId(c.id)}>Delete</Button>
+              <Button size="slim" tone="critical" onClick={() => setDeleteConfirmId(c.public_id)}>Delete</Button>
             </div>
           </div>
         ))}
@@ -236,7 +236,7 @@ export function Content() {
             <TextField label="Benefit Duration (days)" value={form.benefit_duration_days} onChange={set('benefit_duration_days')} type="number" autoComplete="off" />
             <Select label="Target Package" value={form.target_package_id} onChange={set('target_package_id')} options={[
               { label: 'None', value: '' },
-              ...packages.map(p => ({ label: p.name, value: p.id })),
+              ...packages.map(p => ({ label: p.name, value: String(p.id) })),
             ]} />
             <Select label="Status" value={form.status} onChange={set('status')} options={[
               { label: 'Active', value: 'active' },

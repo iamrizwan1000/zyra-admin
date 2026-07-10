@@ -22,28 +22,28 @@ export async function getPendingListings(page = 1) {
   return api<PendingListing[]>('/admin/listings/pending', { query: { page } })
 }
 
-export async function getAdminListingDetail(id: string | number) {
-  return api<unknown>(`/admin/listings/${id}`)
+export async function getAdminListingDetail(public_id: string) {
+  return api<unknown>(`/admin/listings/${public_id}`)
 }
 
-export async function approveListing(id: string | number, note?: string) {
-  return api(`/admin/listings/${id}/approve`, { method: 'POST', body: { note } })
+export async function approveListing(public_id: string, note?: string) {
+  return api(`/admin/listings/${public_id}/approve`, { method: 'POST', body: { note } })
 }
 
-export async function rejectListing(id: string | number, reason: string) {
-  return api(`/admin/listings/${id}/reject`, { method: 'POST', body: { reason } })
+export async function rejectListing(public_id: string, reason: string) {
+  return api(`/admin/listings/${public_id}/reject`, { method: 'POST', body: { reason } })
 }
 
-export async function requestListingChanges(id: string | number, reason: string) {
-  return api(`/admin/listings/${id}/request-changes`, { method: 'POST', body: { reason } })
+export async function requestListingChanges(public_id: string, reason: string) {
+  return api(`/admin/listings/${public_id}/request-changes`, { method: 'POST', body: { reason } })
 }
 
-export async function removeListing(id: string | number, reason: string) {
-  return api(`/admin/listings/${id}/remove`, { method: 'POST', body: { reason } })
+export async function removeListing(public_id: string, reason: string) {
+  return api(`/admin/listings/${public_id}/remove`, { method: 'POST', body: { reason } })
 }
 
-export async function markListingSuspicious(id: string | number, reason: string) {
-  return api(`/admin/listings/${id}/mark-suspicious`, { method: 'POST', body: { reason } })
+export async function markListingSuspicious(public_id: string, reason: string) {
+  return api(`/admin/listings/${public_id}/mark-suspicious`, { method: 'POST', body: { reason } })
 }
 
 // ─── Shops ───
@@ -69,28 +69,28 @@ export async function getPendingShops(page = 1) {
   return api<PendingShop[]>('/admin/shops/pending', { query: { page } })
 }
 
-export async function getAdminShopDetail(id: string | number) {
-  return api<unknown>(`/admin/shops/${id}`)
+export async function getAdminShopDetail(public_id: string) {
+  return api<unknown>(`/admin/shops/${public_id}`)
 }
 
-export async function approveShop(id: string | number) {
-  return api(`/admin/shops/${id}/approve`, { method: 'POST' })
+export async function approveShop(public_id: string) {
+  return api(`/admin/shops/${public_id}/approve`, { method: 'POST' })
 }
 
-export async function rejectShop(id: string | number, reason: string) {
-  return api(`/admin/shops/${id}/reject`, { method: 'POST', body: { reason } })
+export async function rejectShop(public_id: string, reason: string) {
+  return api(`/admin/shops/${public_id}/reject`, { method: 'POST', body: { reason } })
 }
 
-export async function requestShopChanges(id: string | number, reason: string) {
-  return api(`/admin/shops/${id}/request-changes`, { method: 'POST', body: { reason } })
+export async function requestShopChanges(public_id: string, reason: string) {
+  return api(`/admin/shops/${public_id}/request-changes`, { method: 'POST', body: { reason } })
 }
 
-export async function suspendShop(id: string | number, reason: string) {
-  return api(`/admin/shops/${id}/suspend`, { method: 'POST', body: { reason } })
+export async function suspendShop(public_id: string, reason: string) {
+  return api(`/admin/shops/${public_id}/suspend`, { method: 'POST', body: { reason } })
 }
 
-export async function reactivateShop(id: string | number) {
-  return api(`/admin/shops/${id}/reactivate`, { method: 'POST' })
+export async function reactivateShop(public_id: string) {
+  return api(`/admin/shops/${public_id}/reactivate`, { method: 'POST' })
 }
 
 // ─── Payments ───
@@ -113,29 +113,29 @@ export async function getPendingPayments(page = 1) {
   return api<PendingPayment[]>('/admin/payments/pending', { query: { page } })
 }
 
-export async function getAdminPaymentDetail(id: string | number) {
-  return api<unknown>(`/admin/payments/${id}`)
+export async function getAdminPaymentDetail(public_id: string) {
+  return api<unknown>(`/admin/payments/${public_id}`)
 }
 
-export async function approvePayment(id: string | number) {
-  return api(`/admin/payments/${id}/approve`, { method: 'POST' })
+export async function approvePayment(public_id: string) {
+  return api(`/admin/payments/${public_id}/approve`, { method: 'POST' })
 }
 
-export async function rejectPayment(id: string | number, reason: string) {
-  return api(`/admin/payments/${id}/reject`, { method: 'POST', body: { reason } })
+export async function rejectPayment(public_id: string, reason: string) {
+  return api(`/admin/payments/${public_id}/reject`, { method: 'POST', body: { reason } })
 }
 
 // ─── Subscriptions ───
 
-export async function activateSubscription(user_id: string, package_id: string, shop_id?: string, note?: string) {
+export async function activateSubscription(user_public_id: string, package_id: string, shop_public_id?: string, note?: string) {
   return api<{ success: boolean; id: string }>('/admin/subscriptions/activate', {
     method: 'POST',
-    body: { user_id, package_id, shop_id: shop_id ?? null, note: note ?? null },
+    body: { user_public_id, package_id, shop_public_id: shop_public_id ?? null, note: note ?? null },
   })
 }
 
-export async function cancelSubscription(id: string | number, reason: string) {
-  return api(`/admin/subscriptions/${id}/cancel`, { method: 'POST', body: { reason } })
+export async function cancelSubscription(public_id: string, reason: string) {
+  return api(`/admin/subscriptions/${public_id}/cancel`, { method: 'POST', body: { reason } })
 }
 
 // ─── Reports ───
@@ -156,19 +156,19 @@ export async function getPendingReports(page = 1) {
   return api<PendingReport[]>('/admin/reports/pending', { query: { page } })
 }
 
-export async function resolveReport(id: string | number, resolution: 'resolved' | 'dismissed', note?: string) {
-  return api(`/admin/reports/${id}/resolve`, { method: 'POST', body: { resolution, note } })
+export async function resolveReport(public_id: string, resolution: 'resolved' | 'dismissed', note?: string) {
+  return api(`/admin/reports/${public_id}/resolve`, { method: 'POST', body: { resolution, note } })
 }
 
 // ─── Featured Credits ───
 
-export async function getUserPackageUsage(userId: string | number) {
-  return api<unknown>(`/admin/users/${userId}/package-usage`)
+export async function getUserPackageUsage(userPublicId: string) {
+  return api<unknown>(`/admin/users/${userPublicId}/package-usage`)
 }
 
 export interface FeaturedCreditAdjustment {
-  user_id?: string
-  shop_id?: string
+  user_public_id?: string
+  shop_public_id?: string
   adjustment_type: 'extra_credits' | 'limit_override' | 'unlimited'
   extra_credits?: number
   limit_override?: number
@@ -202,16 +202,16 @@ export async function getUsers(search?: string, page = 1) {
   return apiFetch<AdminUser[]>('/admin/users', { query: { search, page } })
 }
 
-export async function getUserById(id: string | number) {
-  return api<unknown>(`/admin/users/${id}`)
+export async function getUserById(public_id: string) {
+  return api<unknown>(`/admin/users/${public_id}`)
 }
 
-export async function suspendUser(id: string | number) {
-  return api(`/admin/users/${id}/suspend`, { method: 'POST' })
+export async function suspendUser(public_id: string) {
+  return api(`/admin/users/${public_id}/suspend`, { method: 'POST' })
 }
 
-export async function activateUser(id: string | number) {
-  return api(`/admin/users/${id}/activate`, { method: 'POST' })
+export async function activateUser(public_id: string) {
+  return api(`/admin/users/${public_id}/activate`, { method: 'POST' })
 }
 
 // ─── Packages ───
@@ -427,9 +427,9 @@ export async function createNotificationCampaign(campaign: Record<string, unknow
   return api<NotificationCampaign>('/admin/banners', { method: 'POST', body: campaign })
 }
 
-export async function sendNotificationCampaign(id: string | number) {
+export async function sendNotificationCampaign(public_id: string) {
   return api<{ campaign_id: string; status: string; recipients: number; dispatched_at: string }>(
-    `/admin/banners/${id}/send`,
+    `/admin/banners/${public_id}/send`,
     { method: 'POST' },
   )
 }
@@ -457,12 +457,12 @@ export async function createCampaign(campaign: Omit<Campaign, 'id' | 'public_id'
   return api<Campaign>('/admin/campaigns', { method: 'POST', body: campaign })
 }
 
-export async function updateCampaign(id: string | number, campaign: Partial<Omit<Campaign, 'id' | 'public_id'>>) {
-  return api<Campaign>(`/admin/campaigns/${id}`, { method: 'PUT', body: campaign })
+export async function updateCampaign(public_id: string, campaign: Partial<Omit<Campaign, 'id' | 'public_id'>>) {
+  return api<Campaign>(`/admin/campaigns/${public_id}`, { method: 'PUT', body: campaign })
 }
 
-export async function deleteCampaign(id: string | number) {
-  await api(`/admin/campaigns/${id}`, { method: 'DELETE' })
+export async function deleteCampaign(public_id: string) {
+  await api(`/admin/campaigns/${public_id}`, { method: 'DELETE' })
 }
 
 export type { PageMeta }

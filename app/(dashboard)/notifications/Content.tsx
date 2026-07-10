@@ -10,6 +10,7 @@ import { StatusBadge } from '@/components/admin/StatusBadge'
 
 interface CampaignRecord {
   id: number
+  public_id: string
   campaign_name: string
   title: string
   message: string
@@ -150,7 +151,7 @@ export function Content() {
 
       <BlockStack gap="400">
         {filteredCampaigns.map((c) => (
-          <Card key={c.id}>
+          <Card key={c.public_id}>
             <BlockStack gap="200">
               <InlineStack align="space-between">
                 <Text variant="headingMd" as="h2">{c.campaign_name}</Text>

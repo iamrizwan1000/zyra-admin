@@ -45,7 +45,7 @@ export function Content() {
     setSuccess(null)
     try {
       await adjustFeaturedCredits({
-        user_id: userId.trim(),
+        user_public_id: userId.trim(),
         adjustment_type: adjustmentType as 'extra_credits' | 'limit_override' | 'unlimited',
         ...(adjustmentType === 'extra_credits' && { extra_credits: Number(extraCredits) }),
         ...(adjustmentType === 'limit_override' && { limit_override: Number(limitOverride) }),

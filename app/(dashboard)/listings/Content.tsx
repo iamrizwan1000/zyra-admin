@@ -68,21 +68,21 @@ export function Content() {
     return () => { cancelled = true }
   }, [])
 
-  const handleApprove = async (id: number) => {
-    try { await approveListing(id); await loadListings() }
+  const handleApprove = async (public_id: string) => {
+    try { await approveListing(public_id); await loadListings() }
     catch (err) { setError(err instanceof Error ? err.message : 'Failed') }
   }
 
   const handleReject = async (reason: string) => {
     if (!actionTarget) return
-    try { await rejectListing(actionTarget.id, reason); await loadListings() }
+    try { await rejectListing(actionTarget.public_id, reason); await loadListings() }
     catch (err) { setError(err instanceof Error ? err.message : 'Failed') }
     finally { setActionTarget(null); setModalType(null) }
   }
 
   const handleRequestChanges = async (reason: string) => {
     if (!actionTarget) return
-    try { await requestListingChanges(actionTarget.id, reason); await loadListings() }
+    try { await requestListingChanges(actionTarget.public_id, reason); await loadListings() }
     catch (err) { setError(err instanceof Error ? err.message : 'Failed') }
     finally { setActionTarget(null); setModalType(null) }
   }
@@ -140,9 +140,9 @@ export function Content() {
             )}
             {filteredListings.map((l) => (
               <tr
-                key={l.id}
+                key={l.public_id}
                 className="border-b border-gray-200 hover:bg-gray-50 cursor-pointer"
-                onClick={() => router.push(`/listings/${l.id}`)}
+                onClick={() => router.push(`/listings/${l.public_id}`)}
               >
                 <td className="p-3">
                   {l.listing_images?.[0]?.thumbnail_url
@@ -157,7 +157,7 @@ export function Content() {
                 <td className="p-3"><Text variant="bodyMd" as="span">{new Date(l.submitted_at).toLocaleDateString()}</Text></td>
                 <td className="p-3">
                   <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
-                    <Button size="slim" onClick={() => handleApprove(l.id)}>Approve</Button>
+                    <Button size="slim" onClick={() => handleApprove(l.public_id)}>Approve</Button>
                     <Button size="slim" onClick={() => { setActionTarget(l); setModalType('reject') }}>Reject</Button>
                     <Button size="slim" onClick={() => { setActionTarget(l); setModalType('request-changes') }}>Changes</Button>
                   </div>

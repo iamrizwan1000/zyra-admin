@@ -46,7 +46,7 @@ type ShopQueryResult = ShopDetailFields | { shop: ShopDetailFields }
 
 export function Content() {
   const router = useRouter()
-  const params = useParams<{ id: string }>()
+  const params = useParams<{ public_id: string }>()
   const [shop, setShop] = useState<ShopQueryResult | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -55,12 +55,12 @@ export function Content() {
 
   useEffect(() => {
     let cancelled = false
-    if (params?.id) {
+    if (params?.public_id) {
       ;(async () => {
         setLoading(true)
         setError(null)
         try {
-          const result = await getAdminShopDetail(params.id)
+          const result = await getAdminShopDetail(params.public_id)
           if (!cancelled) setShop(result as ShopQueryResult)
         } catch (err) {
           if (!cancelled) setError(err instanceof Error ? err.message : 'Failed to load shop')
@@ -70,29 +70,29 @@ export function Content() {
       })()
     }
     return () => { cancelled = true }
-  }, [params?.id])
+  }, [params?.public_id])
 
   const handleAction = async (action: string, reason?: string) => {
-    if (!params?.id) return
+    if (!params?.public_id) return
     try {
       switch (action) {
         case 'approve':
-          await approveShop(params.id)
+          await approveShop(params.public_id)
           break
         case 'reject':
-          await rejectShop(params.id, reason!)
+          await rejectShop(params.public_id, reason!)
           break
         case 'request-changes':
-          await requestShopChanges(params.id, reason!)
+          await requestShopChanges(params.public_id, reason!)
           break
         case 'suspend':
-          await suspendShop(params.id, reason!)
+          await suspendShop(params.public_id, reason!)
           break
         case 'reactivate':
-          await reactivateShop(params.id)
+          await reactivateShop(params.public_id)
           break
       }
-      const result = await getAdminShopDetail(params.id)
+      const result = await getAdminShopDetail(params.public_id)
       setShop(result as ShopQueryResult)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed')
