@@ -75,7 +75,7 @@ export function Content() {
   const [editingId, setEditingId] = useState<number | null>(null)
   const [form, setForm] = useState<PackageFormData>(EMPTY_FORM)
   const [saving, setSaving] = useState(false)
-  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
+  const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null)
 
   useEffect(() => {
     ;(async () => {
@@ -137,7 +137,7 @@ export function Content() {
     }
   }
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: number) => {
     try {
       await deletePackage(id)
       setDeleteConfirmId(null)
