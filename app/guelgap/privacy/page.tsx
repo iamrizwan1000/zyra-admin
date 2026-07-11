@@ -67,7 +67,7 @@ export default function PrivacyPolicyPage() {
               <Text variant="headingXl" as="h1">
                 Privacy Policy
               </Text>
-              <Text variant="bodyMd" as="p" color="subdued">
+              <Text variant="bodyMd" as="p" tone="subdued">
                 Last updated: June 28, 2026
               </Text>
             </BlockStack>
@@ -97,7 +97,7 @@ export default function PrivacyPolicyPage() {
                     </Box>
                   )}
                   {section.footer && (
-                    <Text variant="bodyMd" as="p" color="subdued">
+                    <Text variant="bodyMd" as="p" tone="subdued">
                       {section.footer}
                     </Text>
                   )}
